@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LightStrip, AnimationFramework, Benchmark } from '../index';
 
 const SquareLEDStripExample: React.FC = () => {
-  const lightStrip = new LightStrip(100, 20, 20);
-  lightStrip.addBend(25, 90);
-  lightStrip.addBend(25, 90);
-  lightStrip.addBend(25, 90);
+  const [lightStrip] = useState(() => {
+    const strip = new LightStrip(100, 20, 20);
+    strip.addBend(25, 90);
+    strip.addBend(25, 90);
+    strip.addBend(25, 90);
+    return strip;
+  });
 
-  const animationFramework = new AnimationFramework();
-  const benchmark = new Benchmark();
+  const [animationFramework] = useState(() => new AnimationFramework());
+  const [benchmark] = useState(() => new Benchmark());
+  const [refreshRate, setRefreshRate] = useState<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      animationFramework.stopAnimation('square');
+      animationFramework.stopAnimation('squareBenchmark');
+    };
+  }, [animationFramework]);
 
   const startAnimation = () => {
     animationFramework.startAnimation('square', () => {
@@ -35,7 +46,7 @@ const SquareLEDStripExample: React.FC = () => {
   const stopBenchmark = () => {
     animationFramework.stopAnimation('squareBenchmark');
     benchmark.stop();
-    alert(`Square Light Strip Refresh Rate: ${benchmark.getRefreshRate()} FPS`);
+    setRefreshRate(benchmark.getRefreshRate());
   };
 
   const getRandomColor = () => {
@@ -57,6 +68,11 @@ const SquareLEDStripExample: React.FC = () => {
         <button onClick={startBenchmark}>Start Benchmark</button>
         <button onClick={stopBenchmark}>Stop Benchmark</button>
       </div>
+      {refreshRate !== null && (
+        <div>
+          <p>Refresh Rate: {refreshRate} FPS</p>
+        </div>
+      )}
     </div>
   );
 };

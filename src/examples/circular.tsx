@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LightStrip, AnimationFramework, Benchmark } from '../index';
 
 const CircularLEDStripExample: React.FC = () => {
-  const lightStrip = new LightStrip(100, 12, 12);
-  for (let i = 0; i < 12; i++) {
-    lightStrip.addBend(8.33, 30);
-  }
+  const [lightStrip] = useState(() => {
+    const strip = new LightStrip(100, 12, 12);
+    for (let i = 0; i < 12; i++) {
+      strip.addBend(8.33, 30);
+    }
+    return strip;
+  });
 
-  const animationFramework = new AnimationFramework();
-  const benchmark = new Benchmark();
+  const [animationFramework] = useState(() => new AnimationFramework());
+  const [benchmark] = useState(() => new Benchmark());
+  const [refreshRate, setRefreshRate] = useState<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      animationFramework.stopAnimation('circular');
+      animationFramework.stopAnimation('circularBenchmark');
+    };
+  }, [animationFramework]);
 
   const startAnimation = () => {
     animationFramework.startAnimation('circular', () => {
@@ -35,7 +46,7 @@ const CircularLEDStripExample: React.FC = () => {
   const stopBenchmark = () => {
     animationFramework.stopAnimation('circularBenchmark');
     benchmark.stop();
-    alert(`Circular Light Strip Refresh Rate: ${benchmark.getRefreshRate()} FPS`);
+    setRefreshRate(benchmark.getRefreshRate());
   };
 
   const getRandomColor = () => {
@@ -57,6 +68,11 @@ const CircularLEDStripExample: React.FC = () => {
         <button onClick={startBenchmark}>Start Benchmark</button>
         <button onClick={stopBenchmark}>Stop Benchmark</button>
       </div>
+      {refreshRate !== null && (
+        <div>
+          <p>Refresh Rate: {refreshRate} FPS</p>
+        </div>
+      )}
     </div>
   );
 };
