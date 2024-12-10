@@ -1,8 +1,8 @@
-# Light Strip Library
+# Light Strip Library 🎨
 
 This library allows you to create and control light strips with various configurations, including straight, square, and circular light strips with bends. It provides functionality for animations, ArtNet and E1.31 protocol listeners, and benchmarking the refresh rate.
 
-## Features
+## Features ✨
 
 - Specify light strip details such as length, number of LEDs, and addressable LEDs
 - Handle bends in the light strip, including length and angle
@@ -12,8 +12,9 @@ This library allows you to create and control light strips with various configur
 - Listener for ArtNet and E1.31 protocols
 - Benchmarking the refresh rate
 - Configurable color setup with different channels for each color (default: Red, Green, Blue)
+- Debug logging for color changes and animations
 
-## Installation
+## Installation 📦
 
 To install the library, run:
 
@@ -21,7 +22,7 @@ To install the library, run:
 npm install light-strip-library
 ```
 
-## Usage
+## Usage 🚀
 
 ### Creating a Light Strip
 
@@ -43,7 +44,7 @@ lightStrip.addBend(25, 90);
 document.body.appendChild(lightStrip.draw());
 ```
 
-### Configuring Color Setup
+### Configuring Color Setup 🎨
 
 ```typescript
 import { LightStrip, ColorSetup } from 'light-strip-library';
@@ -62,7 +63,7 @@ lightStrip.setLEDColor(0, '#FF0000'); // Set the color of the first LED to red
 document.body.appendChild(lightStrip.draw());
 ```
 
-### Animations
+### Animations 🎬
 
 ```typescript
 import { AnimationFramework } from 'light-strip-library';
@@ -91,7 +92,7 @@ function getRandomColor() {
 }
 ```
 
-### ArtNet Listener
+### ArtNet Listener 🌐
 
 ```typescript
 import { ArtNetListener } from 'light-strip-library';
@@ -103,7 +104,7 @@ const artNetListener = new ArtNetListener('ws://localhost:8080/artnet', (data) =
 });
 ```
 
-### E1.31 Listener
+### E1.31 Listener 🌐
 
 ```typescript
 import { E131Listener } from 'light-strip-library';
@@ -115,7 +116,7 @@ const e131Listener = new E131Listener('ws://localhost:8080/e131', (data) => {
 });
 ```
 
-### Benchmarking
+### Benchmarking 🏁
 
 ```typescript
 import { Benchmark } from 'light-strip-library';
@@ -139,15 +140,15 @@ function stopBenchmark() {
 }
 ```
 
-## Example Web Page
+## Example Web Page 🌐
 
 To run the example web page, open `example/index.html` in your browser. This page showcases different light strip configurations, including straight, square, and circular light strips with 12 bends. It also includes buttons to start and stop animations and benchmarks.
 
-## Full-Fledged Kitchen Sink Example
+## Full-Fledged Kitchen Sink Example 🍽️
 
 To run the full-fledged kitchen sink example, open `example/kitchen-sink.html` in your browser. This page demonstrates all features of the library, including animations and ArtNet/E1.31 listeners.
 
-## Running the Backend Server
+## Running the Backend Server 🖥️
 
 To host the kitchen sink example, you need to run the backend server. Follow these steps:
 
@@ -160,3 +161,17 @@ node dist/src/Server.js
 ```
 
 The server will start listening on port 8080. You can then access the kitchen sink example by navigating to `http://localhost:8080/kitchen-sink` in your browser.
+
+## Debug Logging 🐛
+
+The library includes debug logging for color changes and animations. To enable debug logging, open the browser's developer console. The debug logs will provide information about color changes and animations, helping you to understand the internal workings of the library.
+
+## Open Source Projects 🌍
+
+This library can be used in conjunction with open source projects like xLights. To connect xLights to the simulator backend, follow these steps:
+
+1. Open xLights and navigate to the "Controllers" tab.
+2. Add a new controller and select "E1.31" as the protocol.
+3. Enter the IP address of the machine running the simulator backend and the port number (default: 8080).
+4. Save the controller settings and start the simulator backend.
+5. xLights will now send data to the simulator backend, allowing you to visualize your light show on the simulated light strip.

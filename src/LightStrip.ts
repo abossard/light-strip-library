@@ -24,6 +24,7 @@ export class LightStrip {
   setLEDColor(index: number, color: string) {
     if (index >= 0 && index < this.numLEDs) {
       this.ledColors[index] = this.mixColors(color);
+      console.debug(`LED ${index} color set to ${this.ledColors[index]}`);
     }
   }
 
@@ -84,6 +85,8 @@ export class LightStrip {
     filter.appendChild(feMerge);
     defs.appendChild(filter);
     svg.appendChild(defs);
+
+    console.debug("Light strip drawn");
 
     return svg;
   }
