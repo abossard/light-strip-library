@@ -1,16 +1,20 @@
+import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup } from './types';
+
 export class LightStrip {
   length: number;
   numLEDs: number;
   addressableLEDs: number;
-  bends: { length: number; angle: number }[];
-  ledColors: string[];
+  bends: Bend[];
+  ledColors: LEDColor[];
+  colorSetup: ColorSetup;
 
-  constructor(length: number, numLEDs: number, addressableLEDs: number) {
+  constructor(length: number, numLEDs: number, addressableLEDs: number, colorSetup: ColorSetup = defaultColorSetup) {
     this.length = length;
     this.numLEDs = numLEDs;
     this.addressableLEDs = addressableLEDs;
     this.bends = [];
     this.ledColors = Array(numLEDs).fill("#000000");
+    this.colorSetup = colorSetup;
   }
 
   addBend(length: number, angle: number) {
@@ -19,8 +23,17 @@ export class LightStrip {
 
   setLEDColor(index: number, color: string) {
     if (index >= 0 && index < this.numLEDs) {
-      this.ledColors[index] = color;
+      this.ledColors[index] = this.mixColors(color);
     }
+  }
+
+  mixColors(color: string): string {
+    const colorChannels = this.colorSetup.channels;
+    const colorValues = color.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
+    const mixedColor = colorChannels.map((channel, index) => {
+      return Math.min(255, Math.floor(channel.value * colorValues[index] / 255));
+    });
+    return `#${mixedColor.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
   }
 
   draw() {

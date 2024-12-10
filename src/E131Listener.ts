@@ -1,3 +1,5 @@
+import { WebSocket, WebSocketServer } from 'ws';
+
 export class E131Listener {
   private socket: WebSocket;
   private onUpdate: (data: any) => void;

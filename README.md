@@ -11,6 +11,7 @@ This library allows you to create and control light strips with various configur
 - Simple framework for animations
 - Listener for ArtNet and E1.31 protocols
 - Benchmarking the refresh rate
+- Configurable color setup with different channels for each color (default: Red, Green, Blue)
 
 ## Installation
 
@@ -39,6 +40,25 @@ const lightStrip = new LightStrip(100, 20, 20);
 lightStrip.addBend(25, 90);
 lightStrip.addBend(25, 90);
 lightStrip.addBend(25, 90);
+document.body.appendChild(lightStrip.draw());
+```
+
+### Configuring Color Setup
+
+```typescript
+import { LightStrip, ColorSetup } from 'light-strip-library';
+
+const customColorSetup: ColorSetup = {
+  channels: [
+    { name: 'Red', value: 0 },
+    { name: 'Green', value: 0 },
+    { name: 'Blue', value: 0 },
+    { name: 'White', value: 0 },
+  ],
+};
+
+const lightStrip = new LightStrip(100, 10, 10, customColorSetup);
+lightStrip.setLEDColor(0, '#FF0000'); // Set the color of the first LED to red
 document.body.appendChild(lightStrip.draw());
 ```
 

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circular LED Strip Example</title>
+  <style>
+    .light-strip-container {
+      margin: 20px;
+    }
+    .light-strip {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    .controls {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Circular LED Strip Example</h1>
+
+  <div class="light-strip-container">
+    <h2>Circular Light Strip with 12 Bends</h2>
+    <div id="circular-light-strip" class="light-strip"></div>
+    <div class="controls">
+      <button onclick="startCircularAnimation()">Start Animation</button>
+      <button onclick="stopCircularAnimation()">Stop Animation</button>
+      <button onclick="startCircularBenchmark()">Start Benchmark</button>
+      <button onclick="stopCircularBenchmark()">Stop Benchmark</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { LightStrip, AnimationFramework, Benchmark } from '../src/index.js';
+
+    const circularLightStrip = new LightStrip(100, 12, 12);
+    for (let i = 0; i < 12; i++) {
+      circularLightStrip.addBend(8.33, 30);
+    }
+    document.getElementById('circular-light-strip').appendChild(circularLightStrip.draw());
+
+    const animationFramework = new AnimationFramework();
+    const benchmark = new Benchmark();
+
+    function startCircularAnimation() {
+      animationFramework.startAnimation('circular', () => {
+        circularLightStrip.setLEDColor(Math.floor(Math.random() * 12), getRandomColor());
+        document.getElementById('circular-light-strip').innerHTML = '';
+        document.getElementById('circular-light-strip').appendChild(circularLightStrip.draw());
+      }, 1000);
+    }
+
+    function stopCircularAnimation() {
+      animationFramework.stopAnimation('circular');
+    }
+
+    function startCircularBenchmark() {
+      benchmark.start();
+      animationFramework.startAnimation('circularBenchmark', () => {
+        benchmark.incrementFrameCount();
+        circularLightStrip.setLEDColor(Math.floor(Math.random() * 12), getRandomColor());
+        document.getElementById('circular-light-strip').innerHTML = '';
+        document.getElementById('circular-light-strip').appendChild(circularLightStrip.draw());
+      }, 1000);
+    }
+
+    function stopCircularBenchmark() {
+      animationFramework.stopAnimation('circularBenchmark');
+      benchmark.stop();
+      alert(`Circular Light Strip Refresh Rate: ${benchmark.getRefreshRate()} FPS`);
+    }
+
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+  </script>
+</body>
+</html>
