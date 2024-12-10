@@ -287,3 +287,62 @@ function stopFallingAndStackingColor() {
   animationFramework.stopAnimation('falling');
 }
 ```
+
+## React Usage Examples
+
+### Straight LED Strip Example
+
+This example demonstrates how to create a straight LED strip using React.
+
+```jsx
+import React from 'react';
+import StraightLEDStripExample from './src/examples/straight';
+
+const App = () => {
+  return (
+    <div>
+      <StraightLEDStripExample />
+    </div>
+  );
+};
+
+export default App;
+```
+
+### Square LED Strip Example
+
+This example demonstrates how to create a square LED strip using React.
+
+```jsx
+import React from 'react';
+import SquareLEDStripExample from './src/examples/square';
+
+const App = () => {
+  return (
+    <div>
+      <SquareLEDStripExample />
+    </div>
+  );
+};
+
+export default App;
+```
+
+### Circular LED Strip Example
+
+This example demonstrates how to create a circular LED strip using React.
+
+```jsx
+import React from 'react';
+import CircularLEDStripExample from './src/examples/circular';
+
+const App = () => {
+  return (
+    <div>
+      <CircularLEDStripExample />
+    </div>
+  );
+};
+
+export default App;
+```
