@@ -1,4 +1,4 @@
-import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup, defaultParameters, SmoothAnimation } from './types';
+import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup, defaultParameters, SmoothAnimation, preconfiguredLightPatterns } from './types';
 import { Logger } from './logger';
 
 export class LightStrip {
@@ -43,6 +43,7 @@ export class LightStrip {
     const svg = document.createElementNS(svgNS, "svg");
     svg.setAttribute("width", "100%");
     svg.setAttribute("height", "100%");
+    svg.setAttribute("style", "background-color: black;");
 
     let currentX = 0;
     let currentY = 0;
