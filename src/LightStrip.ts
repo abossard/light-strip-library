@@ -1,4 +1,5 @@
-import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup } from './types';
+import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup, defaultParameters, SmoothAnimation } from './types';
+import { Logger } from './logger';
 
 export class LightStrip {
   length: number;
@@ -8,13 +9,13 @@ export class LightStrip {
   ledColors: LEDColor[];
   colorSetup: ColorSetup;
 
-  constructor(length: number, numLEDs: number, addressableLEDs: number, colorSetup: ColorSetup = defaultColorSetup) {
-    this.length = length;
-    this.numLEDs = numLEDs;
-    this.addressableLEDs = addressableLEDs;
+  constructor(length: number = defaultParameters.length, numLEDs: number = defaultParameters.numLEDs, addressableLEDs: number = defaultParameters.addressableLEDs, colorSetup: ColorSetup = defaultParameters.colorSetup) {
+    this.length = length!;
+    this.numLEDs = numLEDs!;
+    this.addressableLEDs = addressableLEDs!;
     this.bends = [];
     this.ledColors = Array(numLEDs).fill("#000000");
-    this.colorSetup = colorSetup;
+    this.colorSetup = colorSetup!;
   }
 
   addBend(length: number, angle: number) {
@@ -24,7 +25,7 @@ export class LightStrip {
   setLEDColor(index: number, color: string) {
     if (index >= 0 && index < this.numLEDs) {
       this.ledColors[index] = this.mixColors(color);
-      console.debug(`LED ${index} color set to ${this.ledColors[index]}`);
+      Logger.debug(`LED ${index} color set to ${this.ledColors[index]}`);
     }
   }
 
@@ -86,8 +87,76 @@ export class LightStrip {
     defs.appendChild(filter);
     svg.appendChild(defs);
 
-    console.debug("Light strip drawn");
+    Logger.debug("Light strip drawn");
 
     return svg;
+  }
+
+  animateColorChange(index: number, targetColor: string, duration: number, easingFunction: (t: number) => number) {
+    const startColor = this.ledColors[index];
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsedTime = currentTime - startTime;
+      const progress = Math.min(elapsedTime / duration, 1);
+      const easedProgress = easingFunction(progress);
+
+      const startColorValues = startColor.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
+      const targetColorValues = targetColor.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
+
+      const currentColorValues = startColorValues.map((startValue, i) => {
+        const targetValue = targetColorValues[i];
+        return Math.round(startValue + (targetValue - startValue) * easedProgress);
+      });
+
+      const currentColor = `#${currentColorValues.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+      this.setLEDColor(index, currentColor);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }
+
+  animateBrightnessChange(index: number, targetBrightness: number, duration: number, easingFunction: (t: number) => number) {
+    const startColor = this.ledColors[index];
+    const startBrightness = this.getBrightness(startColor);
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsedTime = currentTime - startTime;
+      const progress = Math.min(elapsedTime / duration, 1);
+      const easedProgress = easingFunction(progress);
+
+      const currentBrightness = startBrightness + (targetBrightness - startBrightness) * easedProgress;
+      const currentColor = this.setBrightness(startColor, currentBrightness);
+      this.setLEDColor(index, currentColor);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }
+
+  getBrightness(color: string): number {
+    const colorValues = color.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
+    return (colorValues[0] + colorValues[1] + colorValues[2]) / 3;
+  }
+
+  setBrightness(color: string, brightness: number): string {
+    const colorValues = color.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
+    const adjustedColorValues = colorValues.map((value) => Math.min(255, Math.round(value * brightness / 255)));
+    return `#${adjustedColorValues.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+  }
+
+  startPreconfiguredPattern(patternName: string) {
+    const pattern = preconfiguredLightPatterns.find(p => p.name === patternName);
+    if (pattern) {
+      pattern.pattern(this);
+    }
   }
 }
