@@ -32,7 +32,6 @@ import { LightStrip } from 'light-strip-library';
 
 const lightStrip = new LightStrip(100, 10, 10);
 lightStrip.setLEDColor(0, '#FF0000'); // Set the color of the first LED to red
-document.body.appendChild(lightStrip.draw());
 ```
 
 ### Adding Bends
@@ -42,7 +41,6 @@ const lightStrip = new LightStrip(100, 20, 20);
 lightStrip.addBend(25, 90);
 lightStrip.addBend(25, 90);
 lightStrip.addBend(25, 90);
-document.body.appendChild(lightStrip.draw());
 ```
 
 ### Configuring Color Setup 🎨
@@ -61,7 +59,6 @@ const customColorSetup: ColorSetup = {
 
 const lightStrip = new LightStrip(100, 10, 10, customColorSetup);
 lightStrip.setLEDColor(0, '#FF0000'); // Set the color of the first LED to red
-document.body.appendChild(lightStrip.draw());
 ```
 
 ### Default Color Setup 🌈
@@ -71,7 +68,6 @@ The default color setup includes Red, Green, and Blue channels. You can use this
 ```typescript
 const lightStrip = new LightStrip(100, 10, 10);
 lightStrip.setLEDColor(0, '#FF0000'); // Set the color of the first LED to red
-document.body.appendChild(lightStrip.draw());
 ```
 
 ### Animations 🎬
@@ -84,8 +80,6 @@ const animationFramework = new AnimationFramework();
 function startAnimation() {
   animationFramework.startAnimation('example', () => {
     lightStrip.setLEDColor(Math.floor(Math.random() * 10), getRandomColor());
-    document.body.innerHTML = '';
-    document.body.appendChild(lightStrip.draw());
   }, 1000);
 }
 
@@ -115,8 +109,6 @@ const animationFramework = new AnimationFramework();
 function startSmoothAnimation() {
   animationFramework.startAnimation('smooth', () => {
     lightStrip.setLEDColor(Math.floor(Math.random() * 10), getRandomColor());
-    document.body.innerHTML = '';
-    document.body.appendChild(lightStrip.draw());
   }, 1000);
 }
 
@@ -132,8 +124,6 @@ import { ArtNetListener } from 'light-strip-library';
 
 const artNetListener = new ArtNetListener('ws://localhost:8080/artnet', (data) => {
   lightStrip.setLEDColor(data.index, data.color);
-  document.body.innerHTML = '';
-  document.body.appendChild(lightStrip.draw());
 });
 ```
 
@@ -144,8 +134,6 @@ import { E131Listener } from 'light-strip-library';
 
 const e131Listener = new E131Listener('ws://localhost:8080/e131', (data) => {
   lightStrip.setLEDColor(data.index, data.color);
-  document.body.innerHTML = '';
-  document.body.appendChild(lightStrip.draw());
 });
 ```
 
@@ -161,8 +149,6 @@ function startBenchmark() {
   animationFramework.startAnimation('benchmark', () => {
     benchmark.incrementFrameCount();
     lightStrip.setLEDColor(Math.floor(Math.random() * 10), getRandomColor());
-    document.body.innerHTML = '';
-    document.body.appendChild(lightStrip.draw());
   }, 1000);
 }
 
@@ -216,7 +202,6 @@ The library provides default parameters for minimal setup, allowing you to creat
 ```typescript
 const lightStrip = new LightStrip();
 lightStrip.setLEDColor(0, '#FF0000'); // Set the color of the first LED to red
-document.body.appendChild(lightStrip.draw());
 ```
 
 ## Preconfigured Light Patterns 🌟
@@ -235,8 +220,6 @@ function startChasingLight() {
   animationFramework.startAnimation('chasing', () => {
     lightStrip.setLEDColor(currentIndex, '#FF0000'); // Set the current LED to red
     currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-    document.body.innerHTML = '';
-    document.body.appendChild(lightStrip.draw());
   }, 100);
 }
 
@@ -257,8 +240,6 @@ function startBlinkingRandomColors() {
     for (let i = 0; i < lightStrip.numLEDs; i++) {
       lightStrip.setLEDColor(i, getRandomColor());
     }
-    document.body.innerHTML = '';
-    document.body.appendChild(lightStrip.draw());
   }, 500);
 }
 
@@ -279,8 +260,6 @@ function startGrowingFlames() {
   animationFramework.startAnimation('flames', () => {
     lightStrip.setLEDColor(currentIndex, '#FF4500'); // Set the current LED to orange-red
     currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-    document.body.innerHTML = '';
-    document.body.appendChild(lightStrip.draw());
   }, 100);
 }
 
@@ -301,8 +280,6 @@ function startFallingAndStackingColor() {
   animationFramework.startAnimation('falling', () => {
     lightStrip.setLEDColor(currentIndex, '#00FF00'); // Set the current LED to green
     currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-    document.body.innerHTML = '';
-    document.body.appendChild(lightStrip.draw());
   }, 100);
 }
 
