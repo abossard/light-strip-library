@@ -11,6 +11,7 @@ This library allows you to create and control light strips with various configur
 - Simple framework for animations
 - Listener for ArtNet and E1.31 protocols
 - Benchmarking the refresh rate
+- Grid-based editor for creating and editing light strips
 - Configurable color setup with different channels for each color (default: Red, Green, Blue)
 - Debug logging for color changes and animations
 - Smooth color and brightness changes in animations
@@ -163,6 +164,20 @@ function stopBenchmark() {
 
 To run the example web page, open `example/index.html` in your browser. This page showcases different light strip configurations, including straight, square, and circular light strips with 12 bends. It also includes buttons to start and stop animations and benchmarks.
 
+## Grid-Based Light Strip Editor ✏️
+
+The library provides a simple editor component to design light strips on a grid. Each cell represents a segment that can be toggled on or off with a chosen color. You can embed the editor in your React application as follows:
+
+```typescript
+import { LightStripEditor } from 'light-strip-library';
+
+export default function EditorExample() {
+  return <LightStripEditor rows={10} cols={10} />;
+}
+```
+
+Click cells in the grid to define your layout. The selected color can be changed with the color input above the grid.
+
 ## Full-Fledged Kitchen Sink Example 🍽️
 
 To run the full-fledged kitchen sink example, open `example/kitchen-sink.html` in your browser. This page demonstrates all features of the library, including animations and ArtNet/E1.31 listeners.
@@ -307,6 +322,19 @@ const App = () => {
 };
 
 export default App;
+```
+
+## Editor Screenshot
+
+Run `npm test` to generate a screenshot of the `LightStripEditor`. The image will be saved as `test/screenshot.png`.
+
+## Fake LEDFX Sender
+
+A small script is included to simulate an LEDFX data source. It sends color updates
+via WebSocket to the server:
+
+```bash
+npx ts-node src/fakeLedFxSender.ts
 ```
 
 ### Square LED Strip Example

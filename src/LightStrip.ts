@@ -1,80 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup, defaultParameters, SmoothAnimation, preconfiguredLightPatterns } from './types';
+import { Bend, LEDColor, ColorSetup, defaultParameters, preconfiguredLightPatterns } from './types';
 import { Logger } from './logger';
 
-export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressableLEDs?: number; colorSetup?: ColorSetup }> = ({
-  length = defaultParameters.length,
-  numLEDs = defaultParameters.numLEDs,
-  addressableLEDs = defaultParameters.addressableLEDs,
-  colorSetup = defaultParameters.colorSetup,
-}) => {
-  const [bends, setBends] = useState<Bend[]>([]);
-  const [ledColors, setLedColors] = useState<LEDColor[]>(Array(numLEDs).fill("#000000"));
+export class LightStrip {
+  length: number;
+  numLEDs: number;
+  addressableLEDs: number;
+  bends: Bend[];
+  ledColors: LEDColor[];
+  colorSetup: ColorSetup;
 
-  const addBend = (length: number, angle: number) => {
-    setBends((prevBends) => [...prevBends, { length, angle }]);
-  };
+  constructor(length: number = defaultParameters.length, numLEDs: number = defaultParameters.numLEDs, addressableLEDs: number = defaultParameters.addressableLEDs, colorSetup: ColorSetup = defaultParameters.colorSetup) {
+    this.length = length!;
+    this.numLEDs = numLEDs!;
+    this.addressableLEDs = addressableLEDs!;
+    this.bends = [];
+    this.ledColors = Array(numLEDs).fill("#000000");
+    this.colorSetup = colorSetup!;
+  }
 
-  const setLEDColor = (index: number, color: string) => {
-    if (index >= 0 && index < numLEDs) {
-      setLedColors((prevColors) => {
-        const newColors = [...prevColors];
-        newColors[index] = color;
-        return newColors;
-      });
-      Logger.debug(`LED ${index} color set to ${color}`);
+  addBend(length: number, angle: number) {
+    this.bends.push({ length, angle });
+  }
+
+  setLEDColor(index: number, color: string) {
+    if (index >= 0 && index < this.numLEDs) {
+      this.ledColors[index] = this.mixColors(color);
+      Logger.debug(`LED ${index} color set to ${this.ledColors[index]}`);
     }
-  };
+  }
 
-  const draw = () => {
+  mixColors(color: string): string {
+    const colorChannels = this.colorSetup.channels;
+    const colorValues = color.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
+    const mixedColor = colorChannels.map((channel, index) => {
+      return Math.min(255, Math.floor(channel.value * colorValues[index] / 255));
+    });
+    return `#${mixedColor.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+  }
+
+  draw() {
     const svgNS = "http://www.w3.org/2000/svg";
-    const elements = [];
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("style", "background-color: black;");
 
     let currentX = 0;
     let currentY = 0;
     let currentAngle = 0;
 
-    for (let i = 0; i < numLEDs; i++) {
-      elements.push(
-        <circle
-          key={i}
-          cx={currentX}
-          cy={currentY}
-          r={5}
-          fill={ledColors[i]}
-          filter="url(#glow)"
-        />
-      );
+    for (let i = 0; i < this.numLEDs; i++) {
+      const led = document.createElementNS(svgNS, "circle");
+      led.setAttribute("cx", currentX.toString());
+      led.setAttribute("cy", currentY.toString());
+      led.setAttribute("r", "5");
+      led.setAttribute("fill", this.ledColors[i]);
+      led.setAttribute("filter", "url(#glow)");
 
-      currentX += Math.cos((currentAngle * Math.PI) / 180) * (length / numLEDs);
-      currentY += Math.sin((currentAngle * Math.PI) / 180) * (length / numLEDs);
+      svg.appendChild(led);
 
-      if (bends.length > 0 && i === Math.floor(numLEDs / bends.length)) {
-        const bend = bends.shift();
+      currentX += Math.cos((currentAngle * Math.PI) / 180) * (this.length / this.numLEDs);
+      currentY += Math.sin((currentAngle * Math.PI) / 180) * (this.length / this.numLEDs);
+
+      if (this.bends.length > 0 && i === Math.floor(this.numLEDs / this.bends.length)) {
+        const bend = this.bends.shift();
         if (bend) {
           currentAngle += bend.angle;
         }
       }
     }
 
-    return (
-      <svg width="100%" height="100%" style={{ backgroundColor: 'black' }}>
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-        {elements}
-      </svg>
-    );
-  };
+    const defs = document.createElementNS(svgNS, "defs");
+    const filter = document.createElementNS(svgNS, "filter");
+    filter.setAttribute("id", "glow");
+    const feGaussianBlur = document.createElementNS(svgNS, "feGaussianBlur");
+    feGaussianBlur.setAttribute("stdDeviation", "2.5");
+    feGaussianBlur.setAttribute("result", "coloredBlur");
+    filter.appendChild(feGaussianBlur);
+    const feMerge = document.createElementNS(svgNS, "feMerge");
+    const feMergeNode1 = document.createElementNS(svgNS, "feMergeNode");
+    feMergeNode1.setAttribute("in", "coloredBlur");
+    const feMergeNode2 = document.createElementNS(svgNS, "feMergeNode");
+    feMergeNode2.setAttribute("in", "SourceGraphic");
+    feMerge.appendChild(feMergeNode1);
+    feMerge.appendChild(feMergeNode2);
+    filter.appendChild(feMerge);
+    defs.appendChild(filter);
+    svg.appendChild(defs);
 
-  const animateColorChange = (index: number, targetColor: string, duration: number, easingFunction: (t: number) => number) => {
-    const startColor = ledColors[index];
+    Logger.debug("Light strip drawn");
+
+    return svg;
+  }
+
+  animateColorChange(index: number, targetColor: string, duration: number, easingFunction: (t: number) => number) {
+    const startColor = this.ledColors[index];
     const startTime = performance.now();
 
     const animate = (currentTime: number) => {
@@ -91,7 +111,7 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
       });
 
       const currentColor = `#${currentColorValues.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
-      setLEDColor(index, currentColor);
+      this.setLEDColor(index, currentColor);
 
       if (progress < 1) {
         requestAnimationFrame(animate);
@@ -99,11 +119,11 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
     };
 
     requestAnimationFrame(animate);
-  };
+  }
 
-  const animateBrightnessChange = (index: number, targetBrightness: number, duration: number, easingFunction: (t: number) => number) => {
-    const startColor = ledColors[index];
-    const startBrightness = getBrightness(startColor);
+  animateBrightnessChange(index: number, targetBrightness: number, duration: number, easingFunction: (t: number) => number) {
+    const startColor = this.ledColors[index];
+    const startBrightness = this.getBrightness(startColor);
     const startTime = performance.now();
 
     const animate = (currentTime: number) => {
@@ -112,8 +132,8 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
       const easedProgress = easingFunction(progress);
 
       const currentBrightness = startBrightness + (targetBrightness - startBrightness) * easedProgress;
-      const currentColor = setBrightness(startColor, currentBrightness);
-      setLEDColor(index, currentColor);
+      const currentColor = this.setBrightness(startColor, currentBrightness);
+      this.setLEDColor(index, currentColor);
 
       if (progress < 1) {
         requestAnimationFrame(animate);
@@ -121,29 +141,23 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
     };
 
     requestAnimationFrame(animate);
-  };
+  }
 
-  const getBrightness = (color: string): number => {
+  getBrightness(color: string): number {
     const colorValues = color.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
     return (colorValues[0] + colorValues[1] + colorValues[2]) / 3;
-  };
+  }
 
-  const setBrightness = (color: string, brightness: number): string => {
+  setBrightness(color: string, brightness: number): string {
     const colorValues = color.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
     const adjustedColorValues = colorValues.map((value) => Math.min(255, Math.round(value * brightness / 255)));
     return `#${adjustedColorValues.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
-  };
+  }
 
-  const startPreconfiguredPattern = (patternName: string) => {
+  startPreconfiguredPattern(patternName: string) {
     const pattern = preconfiguredLightPatterns.find(p => p.name === patternName);
     if (pattern) {
-      pattern.pattern({ length, numLEDs, addressableLEDs });
+      pattern.pattern(this);
     }
-  };
-
-  return (
-    <div>
-      {draw()}
-    </div>
-  );
-};
+  }
+}

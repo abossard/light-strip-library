@@ -53,9 +53,11 @@ export type SmoothAnimation = {
   easingFunction: (t: number) => number;
 };
 
+import type { LightStrip } from './LightStrip';
+
 export type PreconfiguredLightPattern = {
   name: string;
-  pattern: (lightStrip: LightStripDetails) => void;
+  pattern: (lightStrip: LightStrip) => void;
 };
 
 export const preconfiguredLightPatterns: PreconfiguredLightPattern[] = [
