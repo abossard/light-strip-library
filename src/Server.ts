@@ -3,6 +3,7 @@ import { Server } from 'ws';
 import { LightStrip } from './LightStrip';
 import { readFile } from 'fs';
 import { join } from 'path';
+import { Logger } from './logger';
 
 export class SSEServer {
   private clients: Set<any>;
@@ -24,9 +25,11 @@ export class SSEServer {
           'Connection': 'keep-alive',
         });
 
+        Logger.info('SSE client connected');
         this.clients.add(res);
 
         req.on('close', () => {
+          Logger.info('SSE client disconnected');
           this.clients.delete(res);
         });
       }
@@ -34,26 +37,35 @@ export class SSEServer {
 
     const wss = new Server({ server });
 
+    Logger.info('WebSocket server started');
+
     wss.on('connection', (ws) => {
+      Logger.info('WebSocket client connected');
       ws.on('message', (message) => {
+        Logger.debug(`WebSocket message: ${message}`);
         const data = JSON.parse(message.toString());
         this.handleMessage(data);
+      });
+      ws.on('close', () => {
+        Logger.info('WebSocket client disconnected');
       });
     });
 
     server.listen(port, () => {
-      console.log(`SSE server listening on port ${port}`);
+      Logger.info(`SSE server listening on port ${port}`);
     });
   }
 
   private handleMessage(data: any) {
     if (data.type === 'updateColor') {
+      Logger.info(`Color update for LED ${data.index}: ${data.color}`);
       this.lightStrip.setLEDColor(data.index, data.color);
       this.broadcast(JSON.stringify({ type: 'update', index: data.index, color: data.color }));
     }
   }
 
   private broadcast(message: string) {
+    Logger.debug(`Broadcasting: ${message}`);
     for (const client of this.clients) {
       client.write(`data: ${message}\n\n`);
     }

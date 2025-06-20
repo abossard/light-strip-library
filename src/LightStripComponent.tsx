@@ -22,6 +22,8 @@ const LightStripComponent: React.FC = () => {
     let currentY = 0;
     let currentAngle = 0;
 
+    const bendInterval = bends.length > 0 ? Math.floor(ledColors.length / (bends.length + 1)) : ledColors.length;
+    let bendIndex = 0;
     for (let i = 0; i < ledColors.length; i++) {
       elements.push(
         <circle
@@ -37,11 +39,9 @@ const LightStripComponent: React.FC = () => {
       currentX += Math.cos((currentAngle * Math.PI) / 180) * (100 / ledColors.length);
       currentY += Math.sin((currentAngle * Math.PI) / 180) * (100 / ledColors.length);
 
-      if (bends.length > 0 && i === Math.floor(ledColors.length / bends.length)) {
-        const bend = bends.shift();
-        if (bend) {
-          currentAngle += bend.angle;
-        }
+      if (bends[bendIndex] && i === bendInterval * (bendIndex + 1)) {
+        currentAngle += bends[bendIndex].angle;
+        bendIndex++;
       }
     }
 

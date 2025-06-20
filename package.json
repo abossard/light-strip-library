@@ -1,0 +1,25 @@
+{
+  "name": "light-strip-library",
+  "version": "1.0.0",
+  "description": "This library allows you to create and control light strips with various configurations, including straight, square, and circular light strips with bends. It provides functionality for animations, ArtNet and E1.31 protocol listeners, and benchmarking the refresh rate.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "ts-node test/screenshot.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "jest": "^30.0.2",
+    "puppeteer": "^24.10.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
