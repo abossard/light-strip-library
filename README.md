@@ -2,6 +2,30 @@
 
 This library allows you to create and control light strips with various configurations, including straight, square, and circular light strips with bends. It provides functionality for animations, ArtNet and E1.31 protocol listeners, and benchmarking the refresh rate.
 
+## Demo 🎬
+
+Here are some screenshots showcasing different LED strip configurations and animation patterns:
+
+### Initial View - All LED Strip Types
+![All LED strips initial state](screenshots/screenshots-all-led-strips-initial.png)
+*Different LED strip configurations: straight, circular, and square layouts*
+
+### Rainbow Wave Animation
+![Rainbow wave animation](screenshots/screenshots-straight-led-rainbow.png)
+*Beautiful rainbow gradient animation on a straight LED strip*
+
+### Multiple Animations Running
+![Multiple patterns running](screenshots/screenshots-all-patterns-running.png)
+*Rainbow waves on straight and circular strips, with chasing light on square strip*
+
+### Random Blink Pattern
+![Random blink pattern](screenshots/screenshots-random-blink-pattern.png)
+*Random colored LEDs blinking in different patterns*
+
+### Animated Demo
+![Light Strip Demo Animation](screenshots/light-strip-demo.gif)
+*Animated GIF showing various patterns and configurations in action*
+
 ## Features ✨
 
 - Specify light strip details such as length, number of LEDs, and addressable LEDs
@@ -180,6 +204,37 @@ node dist/src/Server.js
 ```
 
 The server will start listening on port 8080. You can then access the kitchen sink example by navigating to `http://localhost:8080/kitchen-sink` in your browser.
+
+## Interactive Demo 🎮
+
+To run the interactive demo showcasing different LED strip configurations:
+
+1. Clone this repository
+2. Install dependencies: `npm install`
+3. Start the demo server: `npm run dev`
+4. Open your browser to `http://localhost:3000`
+
+The demo includes:
+- **Straight LED Strip** - Linear arrangement with 20 LEDs
+- **Circular LED Strip** - Ring formation with 24 LEDs  
+- **Square LED Strip** - Square perimeter with 32 LEDs
+
+Each configuration supports multiple animation patterns:
+- 🏃 **Chasing Light** - Single LED moving along the strip
+- 🌈 **Rainbow Wave** - Smooth color gradient animation
+- ✨ **Random Blink** - Random colored LEDs flashing
+
+### Capturing Screenshots 📸
+
+Screenshots and animated GIFs can be generated using Playwright:
+
+```bash
+# Install Playwright browsers
+npx playwright install
+
+# Run screenshot tests
+npm run screenshot
+```
 
 ## Debug Logging 🐛
 
