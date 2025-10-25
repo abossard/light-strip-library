@@ -1,60 +1,149 @@
-import React from 'react';
-import { LightStrip, AnimationFramework, Benchmark } from '../index';
+import React, { useState, useEffect } from 'react';
+import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup, defaultParameters, SmoothAnimation, preconfiguredLightPatterns } from './types';
+import { Logger } from './logger';
 
-const LightStripComponent: React.FC = () => {
-  const lightStrip = new LightStrip(100, 10, 10);
-  const animationFramework = new AnimationFramework();
-  const benchmark = new Benchmark();
+export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressableLEDs?: number; colorSetup?: ColorSetup }> = ({
+  length = defaultParameters.length,
+  numLEDs = defaultParameters.numLEDs,
+  addressableLEDs = defaultParameters.addressableLEDs,
+  colorSetup = defaultParameters.colorSetup,
+}) => {
+  const [bends, setBends] = useState<Bend[]>([]);
+  const [ledColors, setLedColors] = useState<LEDColor[]>(Array(numLEDs).fill("#000000"));
 
-  const startAnimation = () => {
-    animationFramework.startAnimation('example', () => {
-      lightStrip.setLEDColor(Math.floor(Math.random() * 10), getRandomColor());
-      document.getElementById('light-strip')!.innerHTML = '';
-      document.getElementById('light-strip')!.appendChild(lightStrip.draw());
-    }, 1000);
+  const addBend = (length: number, angle: number) => {
+    setBends((prevBends) => [...prevBends, { length, angle }]);
   };
 
-  const stopAnimation = () => {
-    animationFramework.stopAnimation('example');
-  };
-
-  const startBenchmark = () => {
-    benchmark.start();
-    animationFramework.startAnimation('benchmark', () => {
-      benchmark.incrementFrameCount();
-      lightStrip.setLEDColor(Math.floor(Math.random() * 10), getRandomColor());
-      document.getElementById('light-strip')!.innerHTML = '';
-      document.getElementById('light-strip')!.appendChild(lightStrip.draw());
-    }, 1000);
-  };
-
-  const stopBenchmark = () => {
-    animationFramework.stopAnimation('benchmark');
-    benchmark.stop();
-    alert(`Refresh Rate: ${benchmark.getRefreshRate()} FPS`);
-  };
-
-  const getRandomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+  const setLEDColor = (index: number, color: string) => {
+    if (index >= 0 && index < numLEDs) {
+      setLedColors((prevColors) => {
+        const newColors = [...prevColors];
+        newColors[index] = color;
+        return newColors;
+      });
+      Logger.debug(`LED ${index} color set to ${color}`);
     }
-    return color;
+  };
+
+  const draw = () => {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const elements = [];
+
+    let currentX = 0;
+    let currentY = 0;
+    let currentAngle = 0;
+
+    for (let i = 0; i < numLEDs; i++) {
+      elements.push(
+        <circle
+          key={i}
+          cx={currentX}
+          cy={currentY}
+          r={5}
+          fill={ledColors[i]}
+          filter="url(#glow)"
+        />
+      );
+
+      currentX += Math.cos((currentAngle * Math.PI) / 180) * (length / numLEDs);
+      currentY += Math.sin((currentAngle * Math.PI) / 180) * (length / numLEDs);
+
+      if (bends.length > 0 && i === Math.floor(numLEDs / bends.length)) {
+        const bend = bends.shift();
+        if (bend) {
+          currentAngle += bend.angle;
+        }
+      }
+    }
+
+    return (
+      <svg width="100%" height="100%" style={{ backgroundColor: 'black' }}>
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        {elements}
+      </svg>
+    );
+  };
+
+  const animateColorChange = (index: number, targetColor: string, duration: number, easingFunction: (t: number) => number) => {
+    const startColor = ledColors[index];
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsedTime = currentTime - startTime;
+      const progress = Math.min(elapsedTime / duration, 1);
+      const easedProgress = easingFunction(progress);
+
+      const startColorValues = startColor.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
+      const targetColorValues = targetColor.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
+
+      const currentColorValues = startColorValues.map((startValue, i) => {
+        const targetValue = targetColorValues[i];
+        return Math.round(startValue + (targetValue - startValue) * easedProgress);
+      });
+
+      const currentColor = `#${currentColorValues.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+      setLEDColor(index, currentColor);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  };
+
+  const animateBrightnessChange = (index: number, targetBrightness: number, duration: number, easingFunction: (t: number) => number) => {
+    const startColor = ledColors[index];
+    const startBrightness = getBrightness(startColor);
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsedTime = currentTime - startTime;
+      const progress = Math.min(elapsedTime / duration, 1);
+      const easedProgress = easingFunction(progress);
+
+      const currentBrightness = startBrightness + (targetBrightness - startBrightness) * easedProgress;
+      const currentColor = setBrightness(startColor, currentBrightness);
+      setLEDColor(index, currentColor);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  };
+
+  const getBrightness = (color: string): number => {
+    const colorValues = color.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
+    return (colorValues[0] + colorValues[1] + colorValues[2]) / 3;
+  };
+
+  const setBrightness = (color: string, brightness: number): string => {
+    const colorValues = color.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
+    const adjustedColorValues = colorValues.map((value) => Math.min(255, Math.round(value * brightness / 255)));
+    return `#${adjustedColorValues.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+  };
+
+  const startPreconfiguredPattern = (patternName: string) => {
+    const pattern = preconfiguredLightPatterns.find(p => p.name === patternName);
+    if (pattern) {
+      pattern.pattern({ length, numLEDs, addressableLEDs });
+    }
   };
 
   return (
     <div>
-      <h1>Light Strip Example</h1>
-      <div id="light-strip" />
-      <div className="controls">
-        <button onClick={startAnimation}>Start Animation</button>
-        <button onClick={stopAnimation}>Stop Animation</button>
-        <button onClick={startBenchmark}>Start Benchmark</button>
-        <button onClick={stopBenchmark}>Stop Benchmark</button>
-      </div>
+      {draw()}
     </div>
   );
 };
-
-export default LightStripComponent;
