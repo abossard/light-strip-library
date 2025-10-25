@@ -1,0 +1,17 @@
+# GitHub Copilot Configuration for TypeScript Projects
+
+# This configuration enables GitHub Copilot for TypeScript and sets some default options.
+
+version: 1
+
+# Enable GitHub Copilot
+enabled: true
+
+# Set the language to TypeScript
+languages:
+  - typescript
+
+# Suggested configurations
+suggestions:
+  inline: true
+  multiline: true
