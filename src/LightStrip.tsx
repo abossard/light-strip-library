@@ -8,20 +8,15 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
   addressableLEDs = defaultParameters.addressableLEDs,
   colorSetup = defaultParameters.colorSetup,
 }) => {
-  // Use nullish coalescing to ensure non-null values
-  const stripLength = length ?? defaultParameters.length;
-  const stripNumLEDs = numLEDs ?? defaultParameters.numLEDs;
-  const stripAddressableLEDs = addressableLEDs ?? defaultParameters.addressableLEDs;
-  
   const [bends, setBends] = useState<Bend[]>([]);
-  const [ledColors, setLedColors] = useState<LEDColor[]>(Array(stripNumLEDs).fill("#000000"));
+  const [ledColors, setLedColors] = useState<LEDColor[]>(Array(numLEDs).fill("#000000"));
 
   const addBend = (length: number, angle: number) => {
     setBends((prevBends) => [...prevBends, { length, angle }]);
   };
 
   const setLEDColor = (index: number, color: string) => {
-    if (index >= 0 && index < stripNumLEDs) {
+    if (index >= 0 && index < numLEDs) {
       setLedColors((prevColors) => {
         const newColors = [...prevColors];
         newColors[index] = color;
@@ -39,7 +34,7 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
     let currentY = 0;
     let currentAngle = 0;
 
-    for (let i = 0; i < stripNumLEDs; i++) {
+    for (let i = 0; i < numLEDs; i++) {
       elements.push(
         <circle
           key={i}
@@ -51,10 +46,10 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
         />
       );
 
-      currentX += Math.cos((currentAngle * Math.PI) / 180) * (stripLength / stripNumLEDs);
-      currentY += Math.sin((currentAngle * Math.PI) / 180) * (stripLength / stripNumLEDs);
+      currentX += Math.cos((currentAngle * Math.PI) / 180) * (length / numLEDs);
+      currentY += Math.sin((currentAngle * Math.PI) / 180) * (length / numLEDs);
 
-      if (bends.length > 0 && i === Math.floor(stripNumLEDs / bends.length)) {
+      if (bends.length > 0 && i === Math.floor(numLEDs / bends.length)) {
         const bend = bends.shift();
         if (bend) {
           currentAngle += bend.angle;
