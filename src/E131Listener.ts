@@ -17,9 +17,11 @@ export class E131Listener {
         dataString = event.data;
       } else if (event.data instanceof ArrayBuffer) {
         dataString = new TextDecoder().decode(event.data);
+      } else if (Buffer.isBuffer(event.data)) {
+        dataString = event.data.toString('utf-8');
       } else {
-        // For Buffer or other types, use toString()
-        dataString = event.data.toString();
+        console.error('Unsupported WebSocket data type:', typeof event.data);
+        return;
       }
       const data = JSON.parse(dataString);
       this.onUpdate(data);
