@@ -4,11 +4,16 @@ import { LightStrip } from './LightStrip';
 import { readFile } from 'fs';
 import { join } from 'path';
 
+// Interface for objects that can control LED colors
+interface ILightStripController {
+  setLEDColor(index: number, color: string): void;
+}
+
 export class SSEServer {
   private clients: Set<any>;
-  private lightStrip: any; // TODO: Fix type - LightStrip is a React component, not a class instance
+  private lightStrip: ILightStripController;
 
-  constructor(lightStrip: any) {
+  constructor(lightStrip: ILightStripController) {
     this.clients = new Set();
     this.lightStrip = lightStrip;
   }
