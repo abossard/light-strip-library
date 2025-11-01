@@ -53,61 +53,11 @@ export type SmoothAnimation = {
   easingFunction: (t: number) => number;
 };
 
+// Note: PreconfiguredLightPattern is currently not used but kept for potential future implementation
+// To be functional, it would need a proper interface with setLEDColor method
 export type PreconfiguredLightPattern = {
   name: string;
   pattern: (lightStrip: LightStripDetails) => void;
 };
 
-// Note: These patterns are currently not functional as LightStripDetails
-// doesn't have a setLEDColor method. They are kept for future reference.
-export const preconfiguredLightPatterns: PreconfiguredLightPattern[] = [
-  // {
-  //   name: 'Chasing a Light',
-  //   pattern: (lightStrip) => {
-  //     let currentIndex = 0;
-  //     setInterval(() => {
-  //       lightStrip.setLEDColor(currentIndex, '#FF0000');
-  //       currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-  //     }, 100);
-  //   },
-  // },
-  // {
-  //   name: 'Blinking in Random Colors',
-  //   pattern: (lightStrip) => {
-  //     setInterval(() => {
-  //       for (let i = 0; i < lightStrip.numLEDs; i++) {
-  //         lightStrip.setLEDColor(i, getRandomColor());
-  //       }
-  //     }, 500);
-  //   },
-  // },
-  // {
-  //   name: 'Growing Flames',
-  //   pattern: (lightStrip) => {
-  //     let currentIndex = 0;
-  //     setInterval(() => {
-  //       lightStrip.setLEDColor(currentIndex, '#FF4500');
-  //       currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-  //     }, 100);
-  //   },
-  // },
-  // {
-  //   name: 'Falling and Stacking Color',
-  //   pattern: (lightStrip) => {
-  //     let currentIndex = 0;
-  //     setInterval(() => {
-  //       lightStrip.setLEDColor(currentIndex, '#00FF00');
-  //       currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-  //     }, 100);
-  //   },
-  // },
-];
-
-function getRandomColor() {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
+export const preconfiguredLightPatterns: PreconfiguredLightPattern[] = [];

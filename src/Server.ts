@@ -1,6 +1,5 @@
 import { createServer } from 'http';
 import { Server } from 'ws';
-import { LightStrip } from './LightStrip';
 import { readFile } from 'fs';
 import { join } from 'path';
 

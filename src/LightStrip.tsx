@@ -8,10 +8,10 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
   addressableLEDs = defaultParameters.addressableLEDs,
   colorSetup = defaultParameters.colorSetup,
 }) => {
-  // Use nullish coalescing to ensure non-null values
-  const stripLength = length ?? defaultParameters.length!;
-  const stripNumLEDs = numLEDs ?? defaultParameters.numLEDs!;
-  const stripAddressableLEDs = addressableLEDs ?? defaultParameters.addressableLEDs!;
+  // Use nullish coalescing with fallback values to ensure non-null values
+  const stripLength = length ?? defaultParameters.length ?? 100;
+  const stripNumLEDs = numLEDs ?? defaultParameters.numLEDs ?? 10;
+  const stripAddressableLEDs = addressableLEDs ?? defaultParameters.addressableLEDs ?? 10;
   
   const [bends, setBends] = useState<Bend[]>([]);
   const [ledColors, setLedColors] = useState<LEDColor[]>(Array(stripNumLEDs).fill("#000000"));
