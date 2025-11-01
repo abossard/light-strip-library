@@ -8,15 +8,20 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
   addressableLEDs = defaultParameters.addressableLEDs,
   colorSetup = defaultParameters.colorSetup,
 }) => {
+  // Assert non-null since we have defaults
+  const stripLength = length!;
+  const stripNumLEDs = numLEDs!;
+  const stripAddressableLEDs = addressableLEDs!;
+  
   const [bends, setBends] = useState<Bend[]>([]);
-  const [ledColors, setLedColors] = useState<LEDColor[]>(Array(numLEDs).fill("#000000"));
+  const [ledColors, setLedColors] = useState<LEDColor[]>(Array(stripNumLEDs).fill("#000000"));
 
   const addBend = (length: number, angle: number) => {
     setBends((prevBends) => [...prevBends, { length, angle }]);
   };
 
   const setLEDColor = (index: number, color: string) => {
-    if (index >= 0 && index < numLEDs) {
+    if (index >= 0 && index < stripNumLEDs) {
       setLedColors((prevColors) => {
         const newColors = [...prevColors];
         newColors[index] = color;
@@ -34,7 +39,7 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
     let currentY = 0;
     let currentAngle = 0;
 
-    for (let i = 0; i < numLEDs; i++) {
+    for (let i = 0; i < stripNumLEDs; i++) {
       elements.push(
         <circle
           key={i}
@@ -46,10 +51,10 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
         />
       );
 
-      currentX += Math.cos((currentAngle * Math.PI) / 180) * (length / numLEDs);
-      currentY += Math.sin((currentAngle * Math.PI) / 180) * (length / numLEDs);
+      currentX += Math.cos((currentAngle * Math.PI) / 180) * (stripLength / stripNumLEDs);
+      currentY += Math.sin((currentAngle * Math.PI) / 180) * (stripLength / stripNumLEDs);
 
-      if (bends.length > 0 && i === Math.floor(numLEDs / bends.length)) {
+      if (bends.length > 0 && i === Math.floor(stripNumLEDs / bends.length)) {
         const bend = bends.shift();
         if (bend) {
           currentAngle += bend.angle;
@@ -137,7 +142,7 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
   const startPreconfiguredPattern = (patternName: string) => {
     const pattern = preconfiguredLightPatterns.find(p => p.name === patternName);
     if (pattern) {
-      pattern.pattern({ length, numLEDs, addressableLEDs });
+      pattern.pattern({ length: stripLength, numLEDs: stripNumLEDs, addressableLEDs: stripAddressableLEDs });
     }
   };
 

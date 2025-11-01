@@ -58,47 +58,49 @@ export type PreconfiguredLightPattern = {
   pattern: (lightStrip: LightStripDetails) => void;
 };
 
+// Note: These patterns are currently not functional as LightStripDetails
+// doesn't have a setLEDColor method. They are kept for future reference.
 export const preconfiguredLightPatterns: PreconfiguredLightPattern[] = [
-  {
-    name: 'Chasing a Light',
-    pattern: (lightStrip) => {
-      let currentIndex = 0;
-      setInterval(() => {
-        lightStrip.setLEDColor(currentIndex, '#FF0000');
-        currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-      }, 100);
-    },
-  },
-  {
-    name: 'Blinking in Random Colors',
-    pattern: (lightStrip) => {
-      setInterval(() => {
-        for (let i = 0; i < lightStrip.numLEDs; i++) {
-          lightStrip.setLEDColor(i, getRandomColor());
-        }
-      }, 500);
-    },
-  },
-  {
-    name: 'Growing Flames',
-    pattern: (lightStrip) => {
-      let currentIndex = 0;
-      setInterval(() => {
-        lightStrip.setLEDColor(currentIndex, '#FF4500');
-        currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-      }, 100);
-    },
-  },
-  {
-    name: 'Falling and Stacking Color',
-    pattern: (lightStrip) => {
-      let currentIndex = 0;
-      setInterval(() => {
-        lightStrip.setLEDColor(currentIndex, '#00FF00');
-        currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-      }, 100);
-    },
-  },
+  // {
+  //   name: 'Chasing a Light',
+  //   pattern: (lightStrip) => {
+  //     let currentIndex = 0;
+  //     setInterval(() => {
+  //       lightStrip.setLEDColor(currentIndex, '#FF0000');
+  //       currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
+  //     }, 100);
+  //   },
+  // },
+  // {
+  //   name: 'Blinking in Random Colors',
+  //   pattern: (lightStrip) => {
+  //     setInterval(() => {
+  //       for (let i = 0; i < lightStrip.numLEDs; i++) {
+  //         lightStrip.setLEDColor(i, getRandomColor());
+  //       }
+  //     }, 500);
+  //   },
+  // },
+  // {
+  //   name: 'Growing Flames',
+  //   pattern: (lightStrip) => {
+  //     let currentIndex = 0;
+  //     setInterval(() => {
+  //       lightStrip.setLEDColor(currentIndex, '#FF4500');
+  //       currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
+  //     }, 100);
+  //   },
+  // },
+  // {
+  //   name: 'Falling and Stacking Color',
+  //   pattern: (lightStrip) => {
+  //     let currentIndex = 0;
+  //     setInterval(() => {
+  //       lightStrip.setLEDColor(currentIndex, '#00FF00');
+  //       currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
+  //     }, 100);
+  //   },
+  // },
 ];
 
 function getRandomColor() {

@@ -12,7 +12,8 @@ export class E131Listener {
 
   private initialize() {
     this.socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+      const dataString = typeof event.data === 'string' ? event.data : event.data.toString();
+      const data = JSON.parse(dataString);
       this.onUpdate(data);
     };
 

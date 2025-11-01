@@ -6,9 +6,9 @@ import { join } from 'path';
 
 export class SSEServer {
   private clients: Set<any>;
-  private lightStrip: LightStrip;
+  private lightStrip: any; // TODO: Fix type - LightStrip is a React component, not a class instance
 
-  constructor(lightStrip: LightStrip) {
+  constructor(lightStrip: any) {
     this.clients = new Set();
     this.lightStrip = lightStrip;
   }
