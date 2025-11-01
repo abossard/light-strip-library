@@ -41,23 +41,27 @@ export type DefaultParameters = {
   colorSetup?: ColorSetup;
 };
 
-export const defaultParameters: DefaultParameters = {
+export const defaultParameters = {
   length: 100,
   numLEDs: 10,
   addressableLEDs: 10,
   colorSetup: defaultColorSetup,
-};
+} as const;
 
 export type SmoothAnimation = {
   duration: number;
   easingFunction: (t: number) => number;
 };
 
+// Interface for light strip with control methods
+export interface ILightStripController extends LightStripDetails {
+  setLEDColor(index: number, color: string): void;
+}
+
 // Note: PreconfiguredLightPattern is currently not used but kept for potential future implementation
-// To be functional, it would need a proper interface with setLEDColor method
 export type PreconfiguredLightPattern = {
   name: string;
-  pattern: (lightStrip: LightStripDetails) => void;
+  pattern: (lightStrip: ILightStripController) => void;
 };
 
 export const preconfiguredLightPatterns: PreconfiguredLightPattern[] = [];

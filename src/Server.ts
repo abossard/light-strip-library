@@ -2,11 +2,7 @@ import { createServer } from 'http';
 import { Server } from 'ws';
 import { readFile } from 'fs';
 import { join } from 'path';
-
-// Interface for objects that can control LED colors
-interface ILightStripController {
-  setLEDColor(index: number, color: string): void;
-}
+import { ILightStripController } from './types';
 
 export class SSEServer {
   private clients: Set<any>;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup, defaultParameters, SmoothAnimation, preconfiguredLightPatterns } from './types';
+import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup, defaultParameters, SmoothAnimation } from './types';
 import { Logger } from './logger';
 
 export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressableLEDs?: number; colorSetup?: ColorSetup }> = ({
@@ -8,10 +8,10 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
   addressableLEDs = defaultParameters.addressableLEDs,
   colorSetup = defaultParameters.colorSetup,
 }) => {
-  // Use nullish coalescing with fallback values to ensure non-null values
-  const stripLength = length ?? defaultParameters.length ?? 100;
-  const stripNumLEDs = numLEDs ?? defaultParameters.numLEDs ?? 10;
-  const stripAddressableLEDs = addressableLEDs ?? defaultParameters.addressableLEDs ?? 10;
+  // Use nullish coalescing to ensure non-null values
+  const stripLength = length ?? defaultParameters.length;
+  const stripNumLEDs = numLEDs ?? defaultParameters.numLEDs;
+  const stripAddressableLEDs = addressableLEDs ?? defaultParameters.addressableLEDs;
   
   const [bends, setBends] = useState<Bend[]>([]);
   const [ledColors, setLedColors] = useState<LEDColor[]>(Array(stripNumLEDs).fill("#000000"));
@@ -137,13 +137,6 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
     const colorValues = color.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
     const adjustedColorValues = colorValues.map((value) => Math.min(255, Math.round(value * brightness / 255)));
     return `#${adjustedColorValues.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
-  };
-
-  const startPreconfiguredPattern = (patternName: string) => {
-    const pattern = preconfiguredLightPatterns.find(p => p.name === patternName);
-    if (pattern) {
-      pattern.pattern({ length: stripLength, numLEDs: stripNumLEDs, addressableLEDs: stripAddressableLEDs });
-    }
   };
 
   return (
