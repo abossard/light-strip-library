@@ -1,14 +1,14 @@
 import { createServer } from 'http';
 import { Server } from 'ws';
-import { LightStrip } from './LightStrip';
 import { readFile } from 'fs';
 import { join } from 'path';
+import { ILightStripController } from './types';
 
 export class SSEServer {
   private clients: Set<any>;
-  private lightStrip: LightStrip;
+  private lightStrip: ILightStripController;
 
-  constructor(lightStrip: LightStrip) {
+  constructor(lightStrip: ILightStripController) {
     this.clients = new Set();
     this.lightStrip = lightStrip;
   }

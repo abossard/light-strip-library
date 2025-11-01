@@ -41,71 +41,27 @@ export type DefaultParameters = {
   colorSetup?: ColorSetup;
 };
 
-export const defaultParameters: DefaultParameters = {
+// All default parameters have concrete values
+export const defaultParameters = {
   length: 100,
   numLEDs: 10,
   addressableLEDs: 10,
   colorSetup: defaultColorSetup,
-};
+} as const;
 
 export type SmoothAnimation = {
   duration: number;
   easingFunction: (t: number) => number;
 };
 
+// Interface for light strip with control methods
+export interface ILightStripController extends LightStripDetails {
+  setLEDColor(index: number, color: string): void;
+}
+
+// TODO: Implement preconfigured light patterns with proper ILightStripController interface
+// These would allow users to easily apply common animation patterns
 export type PreconfiguredLightPattern = {
   name: string;
-  pattern: (lightStrip: LightStripDetails) => void;
+  pattern: (lightStrip: ILightStripController) => void;
 };
-
-export const preconfiguredLightPatterns: PreconfiguredLightPattern[] = [
-  {
-    name: 'Chasing a Light',
-    pattern: (lightStrip) => {
-      let currentIndex = 0;
-      setInterval(() => {
-        lightStrip.setLEDColor(currentIndex, '#FF0000');
-        currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-      }, 100);
-    },
-  },
-  {
-    name: 'Blinking in Random Colors',
-    pattern: (lightStrip) => {
-      setInterval(() => {
-        for (let i = 0; i < lightStrip.numLEDs; i++) {
-          lightStrip.setLEDColor(i, getRandomColor());
-        }
-      }, 500);
-    },
-  },
-  {
-    name: 'Growing Flames',
-    pattern: (lightStrip) => {
-      let currentIndex = 0;
-      setInterval(() => {
-        lightStrip.setLEDColor(currentIndex, '#FF4500');
-        currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-      }, 100);
-    },
-  },
-  {
-    name: 'Falling and Stacking Color',
-    pattern: (lightStrip) => {
-      let currentIndex = 0;
-      setInterval(() => {
-        lightStrip.setLEDColor(currentIndex, '#00FF00');
-        currentIndex = (currentIndex + 1) % lightStrip.numLEDs;
-      }, 100);
-    },
-  },
-];
-
-function getRandomColor() {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}

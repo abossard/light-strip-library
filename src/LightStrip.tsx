@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup, defaultParameters, SmoothAnimation, preconfiguredLightPatterns } from './types';
+import { LightStripDetails, Bend, LEDColor, ColorSetup, defaultColorSetup, defaultParameters, SmoothAnimation } from './types';
 import { Logger } from './logger';
 
 export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressableLEDs?: number; colorSetup?: ColorSetup }> = ({
@@ -132,13 +132,6 @@ export const LightStrip: React.FC<{ length?: number; numLEDs?: number; addressab
     const colorValues = color.match(/\w\w/g)?.map((hex) => parseInt(hex, 16)) || [0, 0, 0];
     const adjustedColorValues = colorValues.map((value) => Math.min(255, Math.round(value * brightness / 255)));
     return `#${adjustedColorValues.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
-  };
-
-  const startPreconfiguredPattern = (patternName: string) => {
-    const pattern = preconfiguredLightPatterns.find(p => p.name === patternName);
-    if (pattern) {
-      pattern.pattern({ length, numLEDs, addressableLEDs });
-    }
   };
 
   return (
