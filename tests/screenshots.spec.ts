@@ -4,6 +4,8 @@ test.describe('Light Strip Library Screenshots', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
+    // Wait for React to render
+    await page.waitForSelector('.strip-section', { timeout: 10000 });
   });
 
   test('capture straight LED strip configurations', async ({ page }) => {
@@ -16,7 +18,9 @@ test.describe('Light Strip Library Screenshots', () => {
 
     // Start chasing animation on straight strip
     const straightSection = page.locator('.strip-section').first();
-    await straightSection.locator('button:has-text("Chasing Light")').click();
+    const chasingButton = straightSection.locator('button:has-text("Chasing Light")');
+    await chasingButton.waitFor({ state: 'visible' });
+    await chasingButton.click({ force: true });
     
     // Wait for animation to start
     await page.waitForTimeout(500);
@@ -28,9 +32,14 @@ test.describe('Light Strip Library Screenshots', () => {
     });
 
     // Stop animation and start rainbow
-    await straightSection.locator('button:has-text("Stop")').click();
+    const stopButton = straightSection.locator('button:has-text("Stop")');
+    await stopButton.waitFor({ state: 'visible' });
+    await stopButton.click({ force: true });
     await page.waitForTimeout(300);
-    await straightSection.locator('button:has-text("Rainbow Wave")').click();
+    
+    const rainbowButton = straightSection.locator('button:has-text("Rainbow Wave")');
+    await rainbowButton.waitFor({ state: 'visible' });
+    await rainbowButton.click({ force: true });
     await page.waitForTimeout(500);
     
     await page.screenshot({ 
@@ -53,7 +62,9 @@ test.describe('Light Strip Library Screenshots', () => {
     });
 
     // Start chasing animation
-    await circularSection.locator('button:has-text("Chasing Light")').click();
+    const chasingButton = circularSection.locator('button:has-text("Chasing Light")');
+    await chasingButton.waitFor({ state: 'visible' });
+    await chasingButton.click({ force: true });
     await page.waitForTimeout(500);
     
     await page.screenshot({ 
@@ -63,9 +74,14 @@ test.describe('Light Strip Library Screenshots', () => {
     });
 
     // Rainbow animation
-    await circularSection.locator('button:has-text("Stop")').click();
+    const stopButton = circularSection.locator('button:has-text("Stop")');
+    await stopButton.waitFor({ state: 'visible' });
+    await stopButton.click({ force: true });
     await page.waitForTimeout(300);
-    await circularSection.locator('button:has-text("Rainbow Wave")').click();
+    
+    const rainbowButton = circularSection.locator('button:has-text("Rainbow Wave")');
+    await rainbowButton.waitFor({ state: 'visible' });
+    await rainbowButton.click({ force: true });
     await page.waitForTimeout(500);
     
     await page.screenshot({ 
@@ -88,7 +104,9 @@ test.describe('Light Strip Library Screenshots', () => {
     });
 
     // Start chasing animation
-    await squareSection.locator('button:has-text("Chasing Light")').click();
+    const chasingButton = squareSection.locator('button:has-text("Chasing Light")');
+    await chasingButton.waitFor({ state: 'visible' });
+    await chasingButton.click({ force: true });
     await page.waitForTimeout(500);
     
     await page.screenshot({ 
@@ -98,9 +116,14 @@ test.describe('Light Strip Library Screenshots', () => {
     });
 
     // Random blink animation
-    await squareSection.locator('button:has-text("Stop")').click();
+    const stopButton = squareSection.locator('button:has-text("Stop")');
+    await stopButton.waitFor({ state: 'visible' });
+    await stopButton.click({ force: true });
     await page.waitForTimeout(300);
-    await squareSection.locator('button:has-text("Random Blink")').click();
+    
+    const randomButton = squareSection.locator('button:has-text("Random Blink")');
+    await randomButton.waitFor({ state: 'visible' });
+    await randomButton.click({ force: true });
     await page.waitForTimeout(800);
     
     await page.screenshot({ 
@@ -115,7 +138,10 @@ test.describe('Light Strip Library Screenshots', () => {
     const allSections = page.locator('.strip-section');
     
     for (let i = 0; i < 3; i++) {
-      await allSections.nth(i).locator('button:has-text("Rainbow Wave")').click();
+      const section = allSections.nth(i);
+      const rainbowButton = section.locator('button:has-text("Rainbow Wave")');
+      await rainbowButton.waitFor({ state: 'visible' });
+      await rainbowButton.click({ force: true });
       await page.waitForTimeout(200);
     }
     

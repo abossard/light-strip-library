@@ -42,6 +42,3 @@ playwright/.cache/
 
 # Lock files (keep package-lock.json)
 yarn.lock
-
-# Demo build files
-demo.tsconfig.json
