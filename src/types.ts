@@ -41,12 +41,13 @@ export type DefaultParameters = {
   colorSetup?: ColorSetup;
 };
 
-export const defaultParameters: Required<DefaultParameters> = {
+// All default parameters have concrete values
+export const defaultParameters = {
   length: 100,
   numLEDs: 10,
   addressableLEDs: 10,
   colorSetup: defaultColorSetup,
-};
+} as const;
 
 export type SmoothAnimation = {
   duration: number;
